@@ -11,6 +11,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#define MSHERR(x) { fprintf(stderr, "MSH: %s\n", x); }
+#define MSHLOG(x) { printf("MSH: %s\n", x); }
 #define BYTE unsigned char
 
 extern char* PROMPT;
@@ -28,6 +30,7 @@ int msh_ls(char **);
 int msh_cat(char **);
 int msh_touch(char **);
 int msh_rm(char **);
+int search_built_ins(char **);
 
 static char* built_ins[] = {
 	"cd",
@@ -43,5 +46,7 @@ static int (*built_in_funcs[]) (char **) = {
 	&msh_touch,
 	&msh_rm
 };
+
+void setp_default();
 
 #endif
