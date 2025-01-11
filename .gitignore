@@ -33,3 +33,4 @@
 
 # All swap files
 */*.swp
+.vscode/
