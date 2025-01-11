@@ -34,35 +34,38 @@ void main_loop(void) {
 	int status;
 
 	do {
-		printf("%s%d", PROMPT, EXIT_FAILURE);
-
+		printf("%s", PROMPT);
 		// get line
 		input = read_line();
 		// parse line
 		argl = parse_line(input);
 		// execute line
 		// set status
+		status = execute(argl);
 
+		free(input);
+		free(argl);
 	} while(status != 0);
 
 }
 
 char* read_line(void) {
-	short buff_len = LBUFF_LEN;
-	int pos = 0;
-	char* buff = (char *)malloc(buff_len * sizeof(char));
-
 	char c;
+	int pos = 0;
+	short buff_len = LBUFF_LEN;
+	char* buff = (char *)malloc(buff_len * sizeof(char));
 
 	if(!buff) {
 		printf("MSH: Line buffer allocation error\n");
 		exit(1);
-}
+	}
 
 	while(true) {
 		c = getc(stdin);
 
-		if(c == -1 || c == '\r' || c == '\n') {
+		if(c == -1)
+			exit(0);
+		if(c == '\r' || c == '\n') {
 			buff[pos] = '\0';
 			return buff;
 		}
@@ -87,12 +90,12 @@ char* read_line(void) {
 
 	return NULL;
 }
+
 char** parse_line(char* line) {
 	short buff_len = LTOK_NUM;
 	short pos = 0;
-
-	char** out = (char **)malloc(buff_len * sizeof(char *));
 	char* token;
+	char** out = (char **)malloc(buff_len * sizeof(char *));
 
 	if(!out) {
 		printf("MSH: Token buffer allocation error\n");
