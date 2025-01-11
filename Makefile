@@ -11,7 +11,7 @@ OBJ_DIR = build/obj
 SOURCES = $(wildcard $(SRC_DIR)/*.c)
 OBJECTS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SOURCES))
 
-all: $(LIB_DIR)/MShellCore $(BIN_DIR)/MShell
+all: $(LIB_DIR)/libMShellCore.a $(BIN_DIR)/MShell
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) -c -o $@ $<
