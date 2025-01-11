@@ -37,8 +37,9 @@ void main_loop(void) {
 		printf("%s%d", PROMPT, EXIT_FAILURE);
 
 		// get line
-		char* line = read_line();
+		input = read_line();
 		// parse line
+		argl = parse_line(input);
 		// execute line
 		// set status
 
@@ -124,7 +125,7 @@ char** parse_line(char* line) {
 	return out;
 }
 
-int execute(char** tokens) {
+int run(char** tokens) {
 	pid_t pid;
 	int status;
 
@@ -141,6 +142,10 @@ int execute(char** tokens) {
 	}
 
 	return 1;	
+}
+
+int execute(char** argl) {
+	return run(argl);
 }
 
 void* reallocate(void* ptr, const size_t old, const size_t new) {

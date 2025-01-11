@@ -15,6 +15,7 @@ void   start_loop(void);
 void   main_loop(void);
 char*  read_line(void);
 char** parse_line(char *);
+int    run(char **);
 int    execute(char **);
 
 //Built in commands
