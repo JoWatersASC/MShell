@@ -9,25 +9,28 @@ BIN_DIR = build/bin
 OBJ_DIR = build/obj
 
 SOURCES = $(wildcard $(SRC_DIR)/*.c)
-OBJECTS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, SOURCES)
+OBJECTS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SOURCES))
 
 all: $(LIB_DIR)/MShellCore $(BIN_DIR)/MShell
 
-$(LIB_DIR)/MShellCore: $(OBJECTS)
-	ar rcs $(LIB_DIR)/MShellCore.a $(OBJECTS)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) -c -o $@ $<
 
-$(BIN_DIR)/MShell: .main.o $(LIB_DIR)/MShellCore.a
-	$(CC) $(LDFLAGS) -L$(LIB_DIR) -lMShellCore -o $@ .main.o
+$(LIB_DIR)/libMShellCore.a: $(OBJECTS)
+	ar rcs $(LIB_DIR)/libMShellCore.a $(OBJECTS)
 
-$(OBJ_DIR)/%o: $(SRC_DIR)/%.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+main.o: main.c
+	$(CC) -c $(CFLAGS) -I$(INCLUDE_DIR) -o $@ $<
 
-.main.o: main.c
-	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) -o $@ $<
+$(BIN_DIR)/MShell: main.o $(LIB_DIR)/libMShellCore.a
+	$(CC) $(LDFLAGS) -o $@ main.o -L$(LIB_DIR) -lMShellCore
 
-debug: CFLAGS += -g -O0
+
+
+debug: 
+	CFLAGS += -g -O0
 	$(MAKE) all
 clean:
-	rm -rf $(OBJ_DIR)/* $(LIB_DIR)/* $(BIN_DIR)/*
+	rm -rf $(OBJ_DIR)/* $(LIB_DIR)/* $(BIN_DIR)/* main.o
 
 .PHONY: all debug clean
