@@ -2,11 +2,7 @@
 
 #define LBUFF_LEN 64 // Default size of line buffer
 #define LTOK_NUM  8
-#define LOG printf("%s\n", PROMPT);
-#define ERR(x) { fprintf("MSH: %s\n", x, STDERR); exit(1); }
 
-static char* USER;
-static char* PATH;
 char* PROMPT = NULL;
 
 static const char delims[] = " \r\a";
@@ -15,17 +11,6 @@ extern char** environ;
 void* reallocate(void *, size_t, size_t);
 
 void start_loop(void) {
-	USER = getenv("USER");
-	PATH = getenv("PWD");
-
-	PROMPT = (char *)calloc(256, sizeof(char));
-
-	strcat(PROMPT, "\033[38;5;100m");
-	strcat(PROMPT, USER);
-	strcat(PROMPT, ":\033[32m");
-	strcat(PROMPT, PATH);
-	strcat(PROMPT, "\n\033[36m$ \033[0m");
-
 	main_loop();
 }
 
@@ -149,10 +134,18 @@ int run(char** tokens) {
 		} while(!WIFEXITED(status) && !WIFSIGNALED(status));
 	}
 
-	return 1;	
+	return 1;
 }
 
 int execute(char** argl) {
+	if(argl[0] == NULL) {
+		return 1;
+	}
+
+	int i = search_built_ins(argl);
+	if(i != -1)
+		return i;
+
 	return run(argl);
 }
 
@@ -176,4 +169,20 @@ void* reallocate(void* ptr, const size_t old, const size_t new) {
 
 	free(temp);
 	return ptr;
+}
+
+void setp_default() {
+	char* USER;
+	char* PATH;
+
+	USER = getenv("USER");
+	PATH = getenv("PWD");
+
+	PROMPT = (char *)calloc(256, sizeof(char));
+
+	strcat(PROMPT, "\033[38;5;100m");
+	strcat(PROMPT, USER);
+	strcat(PROMPT, ":\033[32m");
+	strcat(PROMPT, PATH);
+	strcat(PROMPT, "\n\033[36m$ \033[0m\0");
 }
