@@ -3,7 +3,7 @@
 #define LBUFF_LEN 64 // Default size of line buffer
 #define LTOK_NUM  8
 #define LOG printf("%s\n", PROMPT);
-#define ERR(x) { printf("MSH: %s\n", x); exit(1); }
+#define ERR(x) { fprintf("MSH: %s\n", x, STDERR); exit(1); }
 
 static char* USER;
 static char* PATH;
@@ -11,7 +11,7 @@ char* PROMPT = NULL;
 
 static const char delims[] = " \r\a";
 
-void* reallocate(void *, size_t);
+void* reallocate(void *, size_t, size_t);
 
 void start_loop(void) {
 	USER = getenv("USER");
@@ -93,7 +93,7 @@ char** parse_line(char* line) {
 	char** out = (char **)malloc(buff_len * sizeof(char *));
 	char* token;
 
-	if(!tokens) {
+	if(!out) {
 		printf("MSH: Token buffer allocation error\n");
 		exit(1);
 	}
@@ -122,6 +122,28 @@ char** parse_line(char* line) {
 
 	out[pos] = NULL;
 	return out;
+}
+
+int execute(char** tokens) {
+	pid_t pid;
+	pid_t wpid;
+	int status;
+
+	pid = fork();
+	if(pid == 0) {
+		if(execvp(tokens[0], tokens) == -1) {
+			perror("MSH: Process execution failure");
+		}
+		exit(1);
+	} else if(pid < 0) {
+		perror("MSH: Fork error");
+	} else {
+		do {
+			wpid = waitpid(pid, &status, WUNTRACED);
+		} while(!WIFEXITED(status) && !WIFSIGNALED(status));
+	}
+
+	return 1;	
 }
 
 void* reallocate(void* ptr, const size_t old, const size_t new) {
