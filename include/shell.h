@@ -4,8 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <stdbool.h>
+
+#include <unistd.h>
+
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #define BYTE unsigned char
 
@@ -19,11 +23,11 @@ int    run(char **);
 int    execute(char **);
 
 //Built in commands
-extern int msh_cd(char **);
-extern int msh_ls(char **);
-extern int msh_cat(char **);
-extern int msh_touch(char **);
-extern int msh_rm(char **);
+int msh_cd(char **);
+int msh_ls(char **);
+int msh_cat(char **);
+int msh_touch(char **);
+int msh_rm(char **);
 
 static char* built_ins[] = {
 	"cd",
