@@ -10,6 +10,7 @@ static char* PATH;
 char* PROMPT = NULL;
 
 static const char delims[] = " \r\a";
+extern char** environ;
 
 void* reallocate(void *, size_t, size_t);
 
@@ -122,6 +123,8 @@ char** parse_line(char* line) {
 
 			return out;
 		}
+
+		token = strtok(NULL, delims);
 	}
 
 	out[pos] = NULL;
@@ -141,7 +144,9 @@ int run(char** tokens) {
 	} else if(pid < 0) {
 		perror("MSH: Fork error");
 	} else {
-		waitpid(pid, &status, 0);
+		do {
+			waitpid(pid, &status, 0);
+		} while(!WIFEXITED(status) && !WIFSIGNALED(status));
 	}
 
 	return 1;	
