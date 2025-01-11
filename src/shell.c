@@ -126,7 +126,6 @@ char** parse_line(char* line) {
 
 int execute(char** tokens) {
 	pid_t pid;
-	pid_t wpid;
 	int status;
 
 	pid = fork();
@@ -138,9 +137,7 @@ int execute(char** tokens) {
 	} else if(pid < 0) {
 		perror("MSH: Fork error");
 	} else {
-		do {
-			wpid = waitpid(pid, &status, WUNTRACED);
-		} while(!WIFEXITED(status) && !WIFSIGNALED(status));
+		waitpid(pid, &status, 0);
 	}
 
 	return 1;	
