@@ -3,11 +3,15 @@
 #define LBUFF_LEN 64 // Default size of line buffer
 #define LTOK_NUM  8
 #define LOG printf("%s\n", PROMPT);
+#define ERR(x) { printf("MSH: %s\n", x); exit(1); }
 
 static char* USER;
 static char* PATH;
 char* PROMPT = NULL;
 
+static const char delims[] = " \r\a";
+
+void* reallocate(void *, size_t);
 
 void start_loop(void) {
 	USER = getenv("USER");
@@ -52,7 +56,7 @@ char* read_line(void) {
 	if(!buff) {
 		printf("MSH: Line buffer allocation error\n");
 		exit(1);
-	}
+}
 
 	while(true) {
 		c = getc(stdin);
@@ -93,7 +97,51 @@ char** parse_line(char* line) {
 		printf("MSH: Token buffer allocation error\n");
 		exit(1);
 	}
+	
+	token = strtok(line, delims);
+	while(token) {
+		out[pos++] = token;
+		
+		if(pos >= buff_len) {
+			size_t new_len = buff_len + LTOK_NUM;
+			char** temp = out;
 
-	return NULL;
+			out = (char **)malloc(new_len * sizeof(char *));
+			if(!out) {
+				printf("MSH: Token buffer allocation error\n"); 
+				exit(1);
+			}
+			memcpy(out, temp, buff_len * sizeof(char *));
+
+			free(temp);
+			buff_len = new_len;
+
+			return out;
+		}
+	}
+
+	out[pos] = NULL;
+	return out;
 }
 
+void* reallocate(void* ptr, const size_t old, const size_t new) {
+	if(new == 0) {
+		free(ptr);
+		return NULL;
+	}
+
+	void* temp = ptr;
+	ptr = malloc(new);
+
+	if(!ptr) {
+		return temp;
+	}
+
+	if(temp) {
+		size_t copy_num = old < new ? old : new;
+		memcpy(ptr, temp, copy_num);
+	}
+
+	free(temp);
+	return ptr;
+}
