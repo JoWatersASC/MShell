@@ -19,11 +19,11 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 $(LIB_DIR)/libMShellCore.a: $(OBJECTS)
 	ar rcs $(LIB_DIR)/libMShellCore.a $(OBJECTS)
 
-main.o: main.c
+$(OBJ_DIR)/main.o: main.c
 	$(CC) -c $(CFLAGS) -I$(INCLUDE_DIR) -o $@ $<
 
-$(BIN_DIR)/MShell: main.o $(LIB_DIR)/libMShellCore.a
-	$(CC) $(LDFLAGS) -o $@ main.o -L$(LIB_DIR) -lMShellCore
+$(BIN_DIR)/MShell: $(OBJ_DIR)/main.o $(LIB_DIR)/libMShellCore.a
+	$(CC) $(LDFLAGS) -o $@ $(OBJ_DIR)/main.o -L$(LIB_DIR) -lMShellCore
 
 
 
@@ -31,6 +31,6 @@ debug:
 	CFLAGS += -g -O0
 	$(MAKE) all
 clean:
-	rm -rf $(OBJ_DIR)/* $(LIB_DIR)/* $(BIN_DIR)/* main.o
+	rm -rf $(OBJ_DIR)/* $(LIB_DIR)/* $(BIN_DIR)/*
 
 .PHONY: all debug clean
