@@ -19,6 +19,7 @@ void main_loop(void) {
 	char** argl;
 	int status;
 
+	setp_default();
 	do {
 		printf("%s", PROMPT);
 		// get line
