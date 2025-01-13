@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <dirent.h>
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -48,6 +49,17 @@ static int (*built_in_funcs[]) (char **) = {
 	&msh_touch,
 	&msh_rm
 };
+int get_argc(void** argv) {
+	char** arg = argv;
+	int out = 0;
+
+	while(arg && *arg) {
+		out++;
+		arg++;
+	}
+
+	return out;
+}
 
 void setp_default();
 
