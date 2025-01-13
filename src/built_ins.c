@@ -22,7 +22,32 @@ int msh_cd(char** args) {
 }
 
 int msh_ls(char** args) {
+	if(!args[1]) {
+		int fd = open(".", O_DIRECTORY | O_RDONLY);
+		if(fd == -1) {
+			MSHERR(strerror(errno));
+			return 0;
+		}
+	
+		DIR* dir = fdopendir(fd);
+		struct dirent* entry;
 
+		while((entry = readdir(dir)) != NULL) {
+			unsigned short rlen = entry->d_reclen;
+			
+			if(entry->d_type == DT_DIR) {
+				printf("\033[34m");
+			}
+			
+			if(*entry->d_name != '.') {
+				printf("%s ", entry->d_name);
+			}
+			printf("\033[0m");
+		}
+
+		printf("\n");
+		close(fd);
+	}
 	return 1;
 }
 
@@ -31,8 +56,7 @@ int msh_cat(char** args) {
         MSHERR("cat: Too few arguments");
     }
 	
-	char** arg = args;
-	arg++;
+	char** arg = args + 1;
 
 	char buff[64] = {0};
 	ssize_t bytes;
@@ -56,12 +80,31 @@ int msh_cat(char** args) {
 		printf("\n");
 		arg++;
 		memset(buff, 0, 64);
+		close(fd);
 	} 
+
 	return 1;
 }
 
 int msh_touch(char** args) {
-    return 0;
+    if(!args[1]) {
+        MSHERR("cat: Too few arguments");
+    }
+    
+	char** arg = args + 1;
+
+	while(*arg) {
+		int fd = creat(*arg,  S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+		if(fd == -1) {
+			MSHERR(strerror(errno));
+			return 0;
+		}
+
+		arg++;
+		close(fd);
+	}
+
+	return 1;
 }
 
 int msh_rm(char** args) {
