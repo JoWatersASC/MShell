@@ -26,6 +26,16 @@ int msh_set(char** args) {
 	return 1;	
 }
 int msh_unset(char** args) {
+	if(!args[1]) {
+		MSHERR("unset: Too few arguments")
+		return 0;
+	}
+
+	if(unsetenv(args[1]) == -1) {
+		MSHERR(strerror(errno))
+		return 0;
+	}
+
 	return 1;
 }
 
