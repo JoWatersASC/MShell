@@ -29,10 +29,19 @@ int    execute(char **);
 
 //Built in commands
 int msh_cd(char **);
+int msh_pwd(char **);
 int msh_ls(char **);
 int msh_cat(char **);
 int msh_touch(char **);
 int msh_rm(char **);
+
+//Environment control
+int msh_set(char **);
+int msh_unset(char **);
+int msh_alias(char **);
+int msh_unalias(char **);
+int msh_source(char **);
+
 int search_built_ins(char **);
 
 static char* built_ins[] = {
@@ -40,14 +49,26 @@ static char* built_ins[] = {
 	"ls",
 	"cat",
 	"touch",
-	"rm"
+	"rm",
+
+	"set", //a.k.a. 'export'
+	"unset",
+	"alias",
+	"unalias",
+	"source" // sometimes can also just say '.'
 };
 static int (*built_in_funcs[]) (char **) = {
 	&msh_cd,
 	&msh_ls,
 	&msh_cat,
 	&msh_touch,
-	&msh_rm
+	&msh_rm,
+
+	&msh_set,
+	&msh_unset,
+	&msh_alias,
+	&msh_unalias,
+	&msh_source
 };
 static int get_argc(void** argv) {
 	void** arg = argv;
