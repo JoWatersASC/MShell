@@ -8,7 +8,6 @@ export CC
 export CFLAGS
 export LDFLAGS
 
-SRC_DIR = src
 INCLUDE_DIR = $(ROOT_DIR)/include
 LIB_DIR = $(ROOT_DIR)/build/lib
 BIN_DIR = $(ROOT_DIR)/build/bin
@@ -29,7 +28,7 @@ $(BIN_DIR)/main.o: main.c
 	$(CC) -c $(CFLAGS) -I$(INCLUDE_DIR) -o $@ $<
 
 $(BIN_DIR)/MShell: $(BIN_DIR)/main.o $(LIB_DIR)/libMShellCore.a
-	$(CC) $(LDFLAGS) -o $@ $(BIN_DIR)/main.o -L$(LIB_DIR) -lMShellCore
+	$(CC) $(LDFLAGS) $(BIN_DIR)/main.o -L$(LIB_DIR) -lMShellCore -o $@
 
 src:
 	$(MAKE) -C $@
