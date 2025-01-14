@@ -2,7 +2,7 @@
 
 int msh_cd(char** args) {
     if(!args[1]) {
-        MSHERR("cd: Too few arguments");
+        MSHERR("cd: Too few arguments")
     } else if(args[2]) {
         MSHERR("cd: Too many arguments")
         return 0;
@@ -25,11 +25,15 @@ int msh_ls(char** args) {
 	if(!args[1]) {
 		int fd = open(".", O_DIRECTORY | O_RDONLY);
 		if(fd == -1) {
-			MSHERR(strerror(errno));
+			MSHERR(strerror(errno))
 			return 0;
 		}
 	
 		DIR* dir = fdopendir(fd);
+		if(!dir) {
+			MSHERR(strerror(errno))
+			return 0;
+		}
 		struct dirent* entry;
 
 		while((entry = readdir(dir)) != NULL) {
@@ -38,7 +42,7 @@ int msh_ls(char** args) {
 			if(entry->d_type == DT_DIR) {
 				printf("\033[34m");
 			}
-			
+
 			if(*entry->d_name != '.') {
 				printf("%s ", entry->d_name);
 			}
@@ -73,11 +77,11 @@ int msh_cat(char** args) {
 			write(STDOUT_FILENO, buff, bytes);
 		} 
 		if(bytes < 0) {
-			MSHERR(strerror(errno));
+			MSHERR(strerror(errno))
 			return 0;
 		}
-
 		printf("\n");
+
 		arg++;
 		memset(buff, 0, 64);
 		close(fd);
@@ -88,7 +92,7 @@ int msh_cat(char** args) {
 
 int msh_touch(char** args) {
     if(!args[1]) {
-        MSHERR("cat: Too few arguments");
+        MSHERR("cat: Too few arguments")
     }
     
 	char** arg = args + 1;
@@ -96,7 +100,7 @@ int msh_touch(char** args) {
 	while(*arg) {
 		int fd = creat(*arg,  S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
 		if(fd == -1) {
-			MSHERR(strerror(errno));
+			MSHERR(strerror(errno))
 			return 0;
 		}
 
@@ -108,7 +112,16 @@ int msh_touch(char** args) {
 }
 
 int msh_rm(char** args) {
-    return 0;
+	if(!args[1]) {
+		MSHERR("cat: Too few arguments")
+	}
+
+	if(remove(args[1]) == -1) {
+		MSHERR(strerror(errno))
+		return 0;
+	}
+
+	return 1;
 }
 
 int search_built_ins(char** args) {

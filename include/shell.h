@@ -49,8 +49,8 @@ static int (*built_in_funcs[]) (char **) = {
 	&msh_touch,
 	&msh_rm
 };
-int get_argc(void** argv) {
-	char** arg = argv;
+static int get_argc(void** argv) {
+	void** arg = argv;
 	int out = 0;
 
 	while(arg && *arg) {
