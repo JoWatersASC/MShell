@@ -16,7 +16,6 @@ BUILTIN_SDIR = built_ins
 all: $(OBJ_DIR)/shell.o $(BUILTIN_SDIR)
 
 $(OBJ_DIR)/shell.o: shell.c
-	@echo "FOO is $(INCLUDE_DIR)"
 	$(CC) -c $(CFLAGS) -I$(INCLUDE_DIR) -o $@ $<
 
 $(BUILTIN_SDIR):

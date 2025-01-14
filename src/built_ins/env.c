@@ -2,10 +2,10 @@
 
 extern char** environ;
 
-int set(char** args) {
+int msh_set(char** args) {
 	if(!args[1]) {
 		char** env = environ;
-		while(env) {
+		while(*env) {
 			printf("%s\n", *env);
 			env++;
 		}
@@ -25,13 +25,17 @@ int set(char** args) {
 
 	return 1;	
 }
-int unset(char** args) {
+int msh_unset(char** args) {
+	return 1;
 }
 
-int alias(char** args) {
+int msh_alias(char** args) {
+	return 1;
 }
-int unalias(char** args) {
+int msh_unalias(char** args) {
+	return 1;
 }
 
-int source(char** args) {
+int msh_source(char** args) {
+	return 1;
 }
