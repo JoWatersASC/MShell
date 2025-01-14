@@ -57,7 +57,8 @@ int msh_ls(char** args) {
 
 int msh_cat(char** args) {
     if(!args[1]) {
-        MSHERR("cat: Too few arguments");
+        MSHERR("cat: Too few arguments")
+		return 0;
     }
 	
 	char** arg = args + 1;
@@ -68,7 +69,7 @@ int msh_cat(char** args) {
 	while(*arg) {
 		int fd = open(*arg, O_RDONLY);
 		if(fd == -1) {
-			MSHERR(strerror(errno));
+			MSHERR(strerror(errno))
 			return 0;
 		}
 		printf("%s:\n", *arg);

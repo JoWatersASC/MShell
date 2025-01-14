@@ -36,6 +36,27 @@ void main_loop(void) {
 
 }
 
+// **CAN ALSO USE TERMIOS INSTEAD OF MANUAL SPECIAL INPUT HANDLING**
+//special inputs (arrow keys, esc, ctrl, etc.)
+enum sp_inp {
+	ESC = 0,
+	UP,
+	DOWN,
+	RIGHT,
+	LEFT,
+	
+};
+// find special inputs ('^' starting strings of certain length)
+// returns 0 if it's just a '^', -1 on error or eof, or the number correlated with whatever the special input is
+int find_sp() {
+	char c = getc(stdin);
+	if(c == -1) {
+		return -1;
+	}
+
+	return 0;
+}
+
 char* read_line(void) {
 	char c;
 	int pos = 0;
@@ -77,6 +98,7 @@ char* read_line(void) {
 
 	return NULL;
 }
+
 
 char** parse_line(char* line) {
 	short buff_len = LTOK_NUM;
