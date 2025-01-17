@@ -3,14 +3,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <stdbool.h>
+#include <string.h>
+#include <time.h>
 
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <dirent.h>
 
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
@@ -94,6 +96,6 @@ void setp_default();
 	fprintf(stderr, "[%s] [%s:%d %s()] ", timestamp, __FILE__, __LINE__, __func__); \
 	fprintf(stderr, "%s\n", x); \
 	fflush(stderr); /* Important for immediate output */ \
-} while(0)
+} while(0);
 
 #endif
