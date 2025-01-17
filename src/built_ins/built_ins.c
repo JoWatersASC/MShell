@@ -36,6 +36,7 @@ int msh_cd(char** args) {
         return 0;
     }else {
 		char* path = rel_path(args[1], NULL);
+
 		if(!path) {
 			MSHERR("Allocation error")
 			return 0;
@@ -91,7 +92,6 @@ int msh_ls(char** args) {
 		close(fd);
 		return 0;
 	}
-	
 	struct dirent* entry;
 
 	while((entry = readdir(dir)) != NULL) {
@@ -105,7 +105,9 @@ int msh_ls(char** args) {
 
 			if(stat(e_name, &stat_buff) == -1) {
 				MSHERR(strerror(errno))
+				free(e_name);
 				close(fd);
+
 				return 0;
 			} else {
 				if(stat_buff.st_mode & (S_IXUSR | S_IXOTH)) {
@@ -135,7 +137,6 @@ int msh_cat(char** args) {
     }
 	
 	char** arg = args + 1;
-
 	char buff[64] = {0};
 	ssize_t bytes;
 
