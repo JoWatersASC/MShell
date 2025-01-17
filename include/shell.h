@@ -14,7 +14,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define MSHERR(x) { fprintf(stderr, "MSH: %s\n", x); }
+// #define MSHERR(x) { fprintf(stderr, "MSH: %s\n", x); }
 #define MSHLOG(x) { printf("MSH: %s\n", x); }
 #define BYTE unsigned char
 
@@ -83,5 +83,17 @@ static int get_argc(void** argv) {
 }
 
 void setp_default();
+
+#define MSHERR(x) do { \
+	time_t rawtime; \
+	struct tm * timeinfo; \
+	char timestamp[20]; \
+	time(&rawtime); \
+	timeinfo = localtime(&rawtime); \
+	strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", timeinfo); \
+	fprintf(stderr, "[%s] [%s:%d %s()] ", timestamp, __FILE__, __LINE__, __func__); \
+	fprintf(stderr, "%s\n", x); \
+	fflush(stderr); /* Important for immediate output */ \
+} while(0)
 
 #endif
