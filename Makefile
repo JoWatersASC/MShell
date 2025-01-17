@@ -33,9 +33,9 @@ $(BIN_DIR)/MShell: $(BIN_DIR)/main.o $(LIB_DIR)/libMShellCore.a
 src:
 	$(MAKE) -C $@
 
-debug: 
-	CFLAGS += -g -O0
-	$(MAKE) all
+debug: CFLAGS += -g -O0
+debug: all
+
 clean:
 	rm -rf $(OBJ_DIR)/* $(LIB_DIR)/* $(BIN_DIR)/*
 
