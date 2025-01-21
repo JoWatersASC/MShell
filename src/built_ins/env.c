@@ -1,6 +1,16 @@
 #include "shell.h"
+#include "hash.h"
 
 extern char** environ;
+extern struct ssmap alias_map;
+static const char* get_alias(const char* _key) {
+	return get_ssval(&alias_map, _key);
+}
+static bool set_alias(const char* _key, const char* _val) {
+	const struct sspair in_pair = {_key, _val, NULL};
+
+	return ssminsert(&alias_map, in_pair);
+}
 
 int msh_set(char** args) {
 	if(!args[1]) {
@@ -40,7 +50,25 @@ int msh_unset(char** args) {
 }
 
 int msh_alias(char** args) {
-	// make hashmap from char* to char* for alias list
+	if(!args[1]) { // print all aliases
+		print_ssmp(&alias_map);
+		return 1;
+	}
+	
+	if(!args[2]) { // print alias of args[1]
+		return 1;
+	}
+
+	struct sspair* alias_pair = get_ssp(&alias_map, args[1]);
+	if(alias_pair) {
+		alias_pair->val = args[2];
+		return 1;
+	}
+
+	if(!set_alias(args[1], args[2])) {
+		return 0;
+	}
+
 	return 1;
 }
 int msh_unalias(char** args) {
@@ -58,17 +86,17 @@ int msh_source(char** args) {
 		return 0;
 	}
 
-// read lines and run commands
-  // open file
+	// read lines and run commands
+	// open file
 	if(fopen(args[1], "r") == NULL) {
 		MSHERR(strerror(errno))
 		return 0;
 	}
-  // read line into buffer or return if eof
+	// read line into buffer or return if eof
 	
-  // parse line buffer
-  // run command
-  // repeat
-  // close file
+	// parse line buffer
+	// run command
+	// repeat
+	// close file
 	return 1;
 }
