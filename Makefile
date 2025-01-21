@@ -19,19 +19,24 @@ export OBJ_DIR
 
 OBJECTS = $(wildcard $(OBJ_DIR)/*.o)
 
-all: $(LIB_DIR)/libMShellCore.a $(BIN_DIR)/MShell
+all: $(BIN_DIR)/MShell
+
+core: $(LIB_DIR)/libMShellCore.a
+mshell: $(BIN_DIR)/MShell
 
 $(LIB_DIR)/libMShellCore.a: src
 	ar rcs $(LIB_DIR)/libMShellCore.a $(OBJECTS)
 
-$(BIN_DIR)/main.o: main.c
-	$(CC) -c $(CFLAGS) -I$(INCLUDE_DIR) -o $@ $<
-
 $(BIN_DIR)/MShell: $(BIN_DIR)/main.o $(LIB_DIR)/libMShellCore.a
 	$(CC) $(LDFLAGS) $(BIN_DIR)/main.o -L$(LIB_DIR) -lMShellCore -o $@
 
+$(BIN_DIR)/main.o: main.c
+	$(CC) -c $(CFLAGS) -I$(INCLUDE_DIR) -o $@ $<
+
 src:
 	$(MAKE) -C $@
+hash:
+	$(MAKE) -C src $@
 
 debug: CFLAGS += -g -O0
 debug: all
@@ -39,4 +44,6 @@ debug: all
 clean:
 	rm -rf $(OBJ_DIR)/* $(LIB_DIR)/* $(BIN_DIR)/*
 
-.PHONY: all src debug clean
+.PHONY: all core mshell
+.PHONY: src hash
+.PHONY: debug clean
