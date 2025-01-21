@@ -23,7 +23,12 @@ char* get_ssval(ssmap* mp, const char* _key) {
 
 bool ssminsert(ssmap* mp, sspair ssp) {
     struct sspair* in_pair = (sspair *)malloc(sizeof(sspair));
-    *in_pair = ssp;
+    in_pair->key = (char *)malloc(strlen(ssp.key) + 1);
+    in_pair->val = (char *)malloc(strlen(ssp.val) + 1);
+    in_pair->next = NULL;
+
+    strcpy(in_pair->key, ssp.key);
+    strcpy(in_pair->val, ssp.val);
 
     if(!ssminsertp(mp, in_pair)) {
         free(in_pair);
@@ -133,4 +138,20 @@ inline ssmap* make_ssmap(unsigned int _cap) {
     out->cap = _cap;
 
     return out;
+}
+inline void print_ssmp(ssmap* mp) {
+    for(int i = 0; i < mp->cap; i++) {
+		if(mp->data[i]) {
+			struct sspair* bucket = mp->data[i];
+
+			unsigned count = 0;
+			while(bucket) {
+				printf("[%d:%d] Key: %s, Val: %s\n", i, count++, bucket->key, bucket->val);
+				bucket = bucket->next;
+			}
+		}
+		// else
+		// 	printf("[%d] Key: NULL, Val: NULL\n", i);
+	}
+	printf("\n\n");
 }

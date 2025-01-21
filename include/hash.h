@@ -23,6 +23,7 @@ typedef struct ssmap { // string-string map
 } ssmap;
 
 extern inline ssmap* make_ssmap(unsigned int _cap);
+extern inline void print_ssmp(ssmap *);
 
 sspair* get_ssp(ssmap *, const char *);
 char* get_ssval(ssmap *, const char *);
