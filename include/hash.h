@@ -11,11 +11,13 @@
 
 extern inline unsigned int oat_hashf(void *val, const int len);
 
+// Hashmap specifications
 typedef struct sspair { // string-string pair
     const char* key;
     char* val;
     struct sspair* next;
 } sspair;
+
 typedef struct ssmap { // string-string map
     struct sspair** data;
     unsigned int size;
@@ -31,6 +33,8 @@ char* get_ssval(ssmap *, const char *);
 bool ssminsert(ssmap *, sspair);
 bool ssminsertss(ssmap *, char *, char *);
 bool ssminsertp(ssmap *, sspair *);
+
+bool ssmremove(ssmap *, char *);
 
 bool ssrehash(ssmap*, unsigned int, unsigned int (*) (void *, int));
 
