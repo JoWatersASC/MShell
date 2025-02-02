@@ -23,9 +23,14 @@ char* get_ssval(ssmap* mp, const char* _key) {
 
 bool ssminsert(ssmap* mp, sspair ssp) {
     struct sspair* in_pair = (sspair *)malloc(sizeof(sspair));
-    in_pair->key = (char *)malloc(strlen(ssp.key) + 1);
-    in_pair->val = (char *)malloc(strlen(ssp.val) + 1);
+    in_pair->key = (char *)malloc(strlen(ssp.key) + 1); // replace w/ strdup
+    in_pair->val = (char *)malloc(strlen(ssp.val) + 1); // replace w/ strdup
     in_pair->next = NULL;
+
+    if(!(in_pair && in_pair->key && in_pair->val)) {
+        MSHERR("Allocation error")
+        return false;
+    }
 
     strcpy(in_pair->key, ssp.key);
     strcpy(in_pair->val, ssp.val);
@@ -87,7 +92,7 @@ bool ssminsertp(ssmap* mp, sspair* ssp) {
     return true;
 }
 
-bool ssrehash(ssmap* mp, unsigned int old_len, unsigned int (*hash_func) (void *, int)) {
+bool ssrehash(ssmap* mp, const unsigned int old_len, unsigned int (*hash_func) (void *, int)) {
     if(!hash_func) {
         hash_func = oat_hashf;
     }

@@ -34,7 +34,7 @@ int msh_cd(char** args) {
     } else if(args[2]) {
         MSHERR("cd: Too many arguments")
         return 0;
-    }else {
+    } else {
 		char* path = rel_path(args[1], NULL);
 
 		if(!path) {
