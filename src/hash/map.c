@@ -43,7 +43,15 @@ bool ssminsert(ssmap* mp, sspair ssp) {
     return true;
 }
 bool ssminsertss(ssmap* mp, char* _key, char* _val) {
+    if(!_key)
+        return false;
+
     struct sspair* in_pair = (sspair *)malloc(sizeof(sspair));
+    if(!in_pair) {
+        MSHERR("Allocation error")
+        return false;
+    }
+
     in_pair->key = _key;
     in_pair->val = _val;
     in_pair->next = NULL;
@@ -56,6 +64,8 @@ bool ssminsertss(ssmap* mp, char* _key, char* _val) {
     return true;
 }
 bool ssminsertp(ssmap* mp, sspair* ssp) {
+    if(!ssp)
+        return false;
     if(mp->size == mp->cap) {
         return false;
     }
@@ -90,6 +100,38 @@ bool ssminsertp(ssmap* mp, sspair* ssp) {
     }
 
     return true;
+}
+
+bool ssmremove(ssmap* mp, char* _key) {
+    if(!_key)
+        return false;
+
+    unsigned int idx = oat_hashf(_key, strlen(_key)) % mp->cap;
+
+    sspair* curr = mp->data[idx];
+    if(!curr)
+        return false;
+
+    if(curr->key == _key) {
+        mp->data[idx] = curr->next;
+        free(curr);
+
+        mp->size--;
+        return true;
+    }
+
+    while(curr->next) {
+        if(curr->next->key == _key) {
+            sspair* temp = curr->next;
+            curr->next = curr->next->next;
+            free(temp);
+
+            mp->size--;
+            return true;
+        }
+    }
+
+    return false;
 }
 
 bool ssrehash(ssmap* mp, const unsigned int old_len, unsigned int (*hash_func) (void *, int)) {
