@@ -1,4 +1,5 @@
-ROOT_DIR := $(shell pwd)
+# ROOT_DIR := $(shell pwd)
+ROOT_DIR := $(CURDIR)
 export ROOT_DIR
 
 CC = gcc 
@@ -33,10 +34,12 @@ $(BIN_DIR)/MShell: $(BIN_DIR)/main.o $(LIB_DIR)/libMShellCore.a
 $(BIN_DIR)/main.o: main.c
 	$(CC) -c $(CFLAGS) -I$(INCLUDE_DIR) -o $@ $<
 
+
 src:
 	$(MAKE) -C $@
 hash:
 	$(MAKE) -C src $@
+
 
 debug: CFLAGS += -g -O0
 debug: all
@@ -44,6 +47,10 @@ debug: all
 clean:
 	rm -rf $(OBJ_DIR)/* $(LIB_DIR)/* $(BIN_DIR)/*
 
+install:
+	cp $(BIN_DIR)/MShell $(DESTDIR)/usr/local/bin/
+	shell chmod 755 $(DESTDIR)/usr/local/bin/MShell
+
 .PHONY: all core mshell
 .PHONY: src hash
-.PHONY: debug clean
+.PHONY: debug clean install
