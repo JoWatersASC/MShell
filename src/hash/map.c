@@ -8,7 +8,7 @@ sspair* get_ssp(ssmap* mp, const char* _key) {
         return NULL;
 
     while(temp) {
-        if(temp->key == _key) {
+        if(strcmp(temp->key, _key) == 0) {
             return temp;
         }
 
@@ -66,7 +66,7 @@ bool ssminsertss(ssmap* mp, char* _key, char* _val) {
 bool ssminsertp(ssmap* mp, sspair* ssp) {
     if(!ssp)
         return false;
-    if(mp->size == mp->cap) {
+    if(mp->size >= mp->cap) {
         return false;
     }
 
@@ -77,7 +77,7 @@ bool ssminsertp(ssmap* mp, sspair* ssp) {
         mp->data[idx] = ssp;
     } else {
         while(bucket->next) {
-            if(bucket->key == ssp->key)
+            if(strcmp(bucket->key, ssp->key) == 0)
                 return false;
 
             bucket = bucket->next;
@@ -112,7 +112,7 @@ bool ssmremove(ssmap* mp, char* _key) {
     if(!curr)
         return false;
 
-    if(curr->key == _key) {
+    if(strcmp(curr->key, _key) == 0) {
         mp->data[idx] = curr->next;
         free(curr);
 
@@ -121,7 +121,7 @@ bool ssmremove(ssmap* mp, char* _key) {
     }
 
     while(curr->next) {
-        if(curr->next->key == _key) {
+        if(strcmp(curr->next->key, _key) == 0) {
             sspair* temp = curr->next;
             curr->next = curr->next->next;
             free(temp);
