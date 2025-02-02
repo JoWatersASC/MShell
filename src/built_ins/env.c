@@ -22,7 +22,6 @@ int msh_set(char** args) {
 
 		return 1;
 	}
-
 	if(!args[2]) { // means a first arg(env var name) was passed but wasn't given anything to set it to
 		MSHERR("set: Too many arguments")
 		return 0;
@@ -54,7 +53,6 @@ int msh_alias(char** args) {
 		print_ssmp(&alias_map);
 		return 1;
 	}
-	
 	if(!args[2]) { // print alias of args[1]
 		return 1;
 	}
@@ -72,7 +70,19 @@ int msh_alias(char** args) {
 	return 1;
 }
 int msh_unalias(char** args) {
-	// make delete function for char*, char* alias hashmap
+	if(!args[1]) {
+		MSHERR("unalias: Too few arguments")
+		return 0;
+	}
+	if(args[2]) {
+		MSHERR("unalias: Too many arguments")
+		return 0;
+	}
+
+	if(ssmremove(&alias_map, args[1])) {
+		printf("Removed alias for: %s\n", args[1]);
+	}
+
 	return 1;
 }
 
