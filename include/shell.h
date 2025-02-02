@@ -44,8 +44,8 @@ int msh_alias(char **);
 int msh_unalias(char **);
 int msh_source(char **);
 
-char* search_aliases(char *);
 int search_built_ins(char **);
+char* search_aliases(char *);
 
 static char* built_ins[] = {
 	"cd",

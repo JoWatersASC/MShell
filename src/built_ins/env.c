@@ -110,3 +110,13 @@ int msh_source(char** args) {
 	// close file
 	return 1;
 }
+
+char* search_aliases(char* _alias) {
+	struct sspair* alias_pair = get_ssp(&alias_map, _alias);
+
+	if(alias_pair) {
+		return alias_pair->val;
+	}
+
+	return NULL;
+}
