@@ -1,4 +1,5 @@
 #include "shell.h"
+#include "hash.h"
 
 #define LBUFF_LEN 64 // Default size of line buffer
 #define LTOK_NUM  8
@@ -112,6 +113,37 @@ char** parse_line(char* line) {
 	}
 	
 	token = strtok(line, delims);
+
+	if(!token) {
+		out[pos] = NULL;
+		return out;
+	}
+
+	// check if in alias list, if not, break
+	// else, return cstring array and tokenize then put into out
+	char* alias_match = search_aliases(token);
+	if(alias_match) {
+		char* a_token = strtok(alias_match, delims);
+
+		while(a_token) {
+			out[pos++] = a_token;
+
+			if(pos >= buff_len) {
+				buff_len += LTOK_NUM;
+				realloc(out, buff_len * sizeof(char *));
+
+				if(!out) {
+					MSHERR("Token buffer allocation error")
+					exit(1);
+				}
+			}
+
+			a_token = strtok(NULL, delims);
+		}
+
+		token = strtok(NULL, delims);
+	}
+
 	while(token) {
 		out[pos++] = token;
 		
@@ -124,12 +156,10 @@ char** parse_line(char* line) {
 				printf("MSH: Token buffer allocation error\n"); 
 				exit(1);
 			}
-			memcpy(out, temp, buff_len * sizeof(char *));
 
+			memcpy(out, temp, buff_len * sizeof(char *));
 			free(temp);
 			buff_len = new_len;
-
-			return out;
 		}
 
 		token = strtok(NULL, delims);
