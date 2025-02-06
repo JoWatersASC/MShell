@@ -112,7 +112,7 @@ char** parse_line(char* line) {
 		exit(1);
 	}
 	
-	token = strtok(line, delims);
+	token = strtok_r(line, delims, &line);
 
 	if(!token) {
 		out[pos] = NULL;
@@ -130,7 +130,7 @@ char** parse_line(char* line) {
 
 			if(pos >= buff_len) {
 				buff_len += LTOK_NUM;
-				realloc(out, buff_len * sizeof(char *));
+				out = realloc(out, buff_len * sizeof(char *));
 
 				if(!out) {
 					MSHERR("Token buffer allocation error")
@@ -140,8 +140,8 @@ char** parse_line(char* line) {
 
 			a_token = strtok(NULL, delims);
 		}
-
-		token = strtok(NULL, delims);
+		
+		token = strtok_r(NULL, delims, &line);
 	}
 
 	while(token) {
@@ -162,7 +162,7 @@ char** parse_line(char* line) {
 			buff_len = new_len;
 		}
 
-		token = strtok(NULL, delims);
+		token = strtok_r(NULL, delims, &line);
 	}
 
 	out[pos] = NULL;
