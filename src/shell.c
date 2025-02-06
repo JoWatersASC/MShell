@@ -76,10 +76,11 @@ char* read_line(void) {
 			exit(0);
 		if(c == '\r' || c == '\n') {
 			buff[pos] = '\0';
+			buff[pos + 1] = '\0';
 			return buff;
 		}
 
-		if(pos >= buff_len - 1) { // At end of buffer, allocate more space
+		if(pos >= buff_len - 2) { // At end of buffer, allocate more space
 			buff_len += LBUFF_LEN * 2 / 3;
 
 			char* new_buff = (char *)malloc(buff_len * sizeof(char));
@@ -112,7 +113,7 @@ char** parse_line(char* line) {
 		exit(1);
 	}
 	
-	token = strtok_r(line, delims, &line);
+	token = strtok(line, delims);
 
 	if(!token) {
 		out[pos] = NULL;
@@ -123,25 +124,20 @@ char** parse_line(char* line) {
 	// else, return cstring array and tokenize then put into out
 	char* alias_match = search_aliases(token);
 	if(alias_match) {
-		char* a_token = strtok(alias_match, delims);
+		alias_match = strdup(alias_match);
+		short tok_len = strlen(line);
 
-		while(a_token) {
-			out[pos++] = a_token;
+		memset(line, 0, tok_len);
+		line[tok_len] = delims[0];
 
-			if(pos >= buff_len) {
-				buff_len += LTOK_NUM;
-				out = realloc(out, buff_len * sizeof(char *));
-
-				if(!out) {
-					MSHERR("Token buffer allocation error")
-					exit(1);
-				}
-			}
-
-			a_token = strtok(NULL, delims);
+		alias_match = realloc(alias_match, strlen(alias_match) + strlen(line + tok_len) + 1);
+		if(!alias_match) {
+			MSHERR("realloc error")
+			exit(1);
 		}
-		
-		token = strtok_r(NULL, delims, &line);
+
+		line = strcat(alias_match, line + tok_len);
+		token = strtok(line, delims);
 	}
 
 	while(token) {
@@ -162,7 +158,7 @@ char** parse_line(char* line) {
 			buff_len = new_len;
 		}
 
-		token = strtok_r(NULL, delims, &line);
+		token = strtok(NULL, delims);
 	}
 
 	out[pos] = NULL;
