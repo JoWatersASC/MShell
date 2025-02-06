@@ -15,7 +15,7 @@ sspair* get_ssp(ssmap* mp, const char* _key) {
         temp = temp->next;
     }
 
-    return temp->next;
+    return NULL;
 }
 char* get_ssval(ssmap* mp, const char* _key) {
     return get_ssp(mp, _key)->val;
