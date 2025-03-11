@@ -114,7 +114,7 @@ int msh_source(char** args) {
 char* search_aliases(char* _alias) {
 	struct sspair* alias_pair = get_ssp(&alias_map, _alias);
 
-	if(alias_pair) {
+	if(alias_pair && strcmp(alias_pair->val, "alias") != 0) {
 		return alias_pair->val;
 	}
 
