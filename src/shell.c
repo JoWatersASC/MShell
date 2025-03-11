@@ -12,19 +12,24 @@ extern char** environ;
 void* reallocate(void *, size_t, size_t);
 
 void start_loop(void) {
-	main_loop();
+	main_loop(NULL);
 }
 
-void main_loop(void) {
+void main_loop(FILE *fin) {
+	if(!fin)
+		fin = stdin;
+
 	char* input;
 	char** argl;
 	int status;
 
 	setp_default();
 	do {
-		printf("%s", PROMPT);
+		if(fin == stdin)
+			printf("%s", PROMPT);
+
 		// get line
-		input = read_line();
+		input = read_line(fin);
 		// parse line
 		argl = parse_line(input);
 		// execute line
@@ -58,7 +63,10 @@ int find_sp() {
 	return 0;
 }
 
-char* read_line(void) {
+char* read_line(FILE *fin) {
+	if(!fin)
+		fin = stdin;
+
 	char c;
 	int pos = 0;
 	short buff_len = LBUFF_LEN;
@@ -70,7 +78,7 @@ char* read_line(void) {
 	}
 
 	while(true) {
-		c = getc(stdin);
+		c = fgetc(fin);
 
 		if(c == -1)
 			exit(0);

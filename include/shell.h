@@ -23,8 +23,8 @@
 extern char* PROMPT;
 
 void   start_loop(void);
-void   main_loop(void);
-char*  read_line(void);
+void   main_loop(FILE *);
+char*  read_line(FILE *);
 char** parse_line(char *);
 int    run(char **);
 int    execute(char **);
