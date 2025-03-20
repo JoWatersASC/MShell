@@ -96,18 +96,17 @@ int msh_source(char** args) {
 		return 0;
 	}
 
-	// read lines and run commands
-	// open file
-	if(fopen(args[1], "r") == NULL) {
+	FILE *src_file;
+	if((src_file = fopen(args[1], "r")) == NULL) {
 		MSHERR(strerror(errno))
 		return 0;
 	}
-	// read line into buffer or return if eof
-	
-	// parse line buffer
-	// run command
-	// repeat
-	// close file
+
+	main_loop(src_file);
+	if(fclose(src_file)) {
+		printf("fclose: %s\n", strerror(errno));
+	}
+
 	return 1;
 }
 
