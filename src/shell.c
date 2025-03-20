@@ -1,4 +1,5 @@
 #include "shell.h"
+#include "hash.h"
 
 #define LBUFF_LEN 64 // Default size of line buffer
 #define LTOK_NUM  8
@@ -11,23 +12,24 @@ extern char** environ;
 void* reallocate(void *, size_t, size_t);
 
 void start_loop(void) {
-	main_loop();
+	main_loop(NULL);
 }
 
-void main_loop(void) {
+void main_loop(FILE *fin) {
+	if(!fin)
+		fin = stdin;
+
 	char* input;
 	char** argl;
 	int status;
 
 	setp_default();
 	do {
-		printf("%s", PROMPT);
-		// get line
-		input = read_line();
-		// parse line
+		if(fin == stdin)
+			printf("%s", PROMPT);
+
+		input = read_line(fin);
 		argl = parse_line(input);
-		// execute line
-		// set status
 		status = execute(argl);
 
 		free(input);
@@ -36,7 +38,31 @@ void main_loop(void) {
 
 }
 
-char* read_line(void) {
+// **CAN ALSO USE TERMIOS INSTEAD OF MANUAL SPECIAL INPUT HANDLING**
+//special inputs (arrow keys, esc, ctrl, etc.)
+enum sp_inp {
+	ESC = 0,
+	UP,
+	DOWN,
+	RIGHT,
+	LEFT,
+	
+};
+// find special inputs ('^' starting strings of certain length)
+// returns 0 if it's just a '^', -1 on error or eof, or the number correlated with whatever the special input is
+int find_sp() {
+	char c = getc(stdin);
+	if(c == -1) {
+		return -1;
+	}
+
+	return 0;
+}
+
+char* read_line(FILE *fin) {
+	if(!fin)
+		fin = stdin;
+
 	char c;
 	int pos = 0;
 	short buff_len = LBUFF_LEN;
@@ -48,16 +74,21 @@ char* read_line(void) {
 	}
 
 	while(true) {
-		c = getc(stdin);
+		c = fgetc(fin);
 
-		if(c == -1)
-			exit(0);
+		if(c == -1) { // represents end of file
+			if(fin == stdin)
+				exit(0);
+			else
+				break;
+		}
 		if(c == '\r' || c == '\n') {
 			buff[pos] = '\0';
+			buff[pos + 1] = '\0';
 			return buff;
 		}
 
-		if(pos >= buff_len - 1) { // At end of buffer, allocate more space
+		if(pos >= buff_len - 2) { // At end of buffer, allocate more space
 			buff_len += LBUFF_LEN * 2 / 3;
 
 			char* new_buff = (char *)malloc(buff_len * sizeof(char));
@@ -78,6 +109,7 @@ char* read_line(void) {
 	return NULL;
 }
 
+
 char** parse_line(char* line) {
 	short buff_len = LTOK_NUM;
 	short pos = 0;
@@ -90,6 +122,32 @@ char** parse_line(char* line) {
 	}
 	
 	token = strtok(line, delims);
+
+	if(!token) {
+		out[pos] = NULL;
+		return out;
+	}
+
+	// check if in alias list, if not, break
+	// else, return cstring array and tokenize then put into out
+	char* alias_match = search_aliases(token);
+	if(alias_match) {
+		alias_match = strdup(alias_match);
+		short tok_len = strlen(line);
+
+		memset(line, 0, tok_len);
+		line[tok_len] = delims[0];
+
+		alias_match = realloc(alias_match, strlen(alias_match) + strlen(line + tok_len) + 1);
+		if(!alias_match) {
+			MSHERR("realloc error")
+			exit(1);
+		}
+
+		line = strcat(alias_match, line + tok_len);
+		token = strtok(line, delims);
+	}
+
 	while(token) {
 		out[pos++] = token;
 		
@@ -102,12 +160,10 @@ char** parse_line(char* line) {
 				printf("MSH: Token buffer allocation error\n"); 
 				exit(1);
 			}
-			memcpy(out, temp, buff_len * sizeof(char *));
 
+			memcpy(out, temp, buff_len * sizeof(char *));
 			free(temp);
 			buff_len = new_len;
-
-			return out;
 		}
 
 		token = strtok(NULL, delims);
@@ -140,7 +196,7 @@ int run(char** tokens) {
 
 int execute(char** argl) {
 	if(argl[0] == NULL) {
-		return 1;
+		return 0;
 	}
 
 	int i = search_built_ins(argl);
