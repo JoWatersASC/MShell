@@ -28,12 +28,8 @@ void main_loop(FILE *fin) {
 		if(fin == stdin)
 			printf("%s", PROMPT);
 
-		// get line
 		input = read_line(fin);
-		// parse line
 		argl = parse_line(input);
-		// execute line
-		// set status
 		status = execute(argl);
 
 		free(input);
@@ -80,8 +76,12 @@ char* read_line(FILE *fin) {
 	while(true) {
 		c = fgetc(fin);
 
-		if(c == -1)
-			exit(0);
+		if(c == -1) { // represents end of file
+			if(fin == stdin)
+				exit(0);
+			else
+				break;
+		}
 		if(c == '\r' || c == '\n') {
 			buff[pos] = '\0';
 			buff[pos + 1] = '\0';
@@ -196,7 +196,7 @@ int run(char** tokens) {
 
 int execute(char** argl) {
 	if(argl[0] == NULL) {
-		return 1;
+		return 0;
 	}
 
 	int i = search_built_ins(argl);
