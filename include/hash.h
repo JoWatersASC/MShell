@@ -9,7 +9,6 @@
 
 #define INF 0x3F3F3F3F
 
-extern inline unsigned int oat_hashf(void *val, const int len);
 
 // Hashmap specifications
 typedef struct sspair { // string-string pair
@@ -38,4 +37,21 @@ bool ssmremove(ssmap *, char *);
 
 bool ssrehash(ssmap*, unsigned int, unsigned int (*) (void *, int));
 
+static inline unsigned int oat_hashf(void *val, const int len) {
+    unsigned char *p = (unsigned char *)val;
+    unsigned int hash = 0;
+    int i;
+
+    for ( i = 0; i < len; i++ ) {
+        hash += p[i];
+        hash += ( hash << 10 );
+        hash ^= ( hash >> 6 );
+    }
+ 
+    hash += ( hash << 3 );
+    hash ^= ( hash >> 11 );
+    hash += ( hash << 15 );
+
+    return hash;
+}
 #endif
