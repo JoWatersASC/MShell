@@ -1,6 +1,6 @@
 #include "hash.h"
 
-inline unsigned int oat_hashf(void *val, const int len) {
+/* inline unsigned int oat_hashf(void *val, const int len) {
     unsigned char *p = (unsigned char *)val;
     unsigned int hash = 0;
     int i;
@@ -17,3 +17,4 @@ inline unsigned int oat_hashf(void *val, const int len) {
 
     return hash;
 }
+*/

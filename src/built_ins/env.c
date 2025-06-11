@@ -3,10 +3,12 @@
 
 extern char** environ;
 extern struct ssmap alias_map;
-static const char* get_alias(const char* _key) {
+
+const char* get_alias(const char* _key) {
 	return get_ssval(&alias_map, _key);
 }
-static bool set_alias(const char* _key, const char* _val) {
+
+bool set_alias(const char* _key, const char* _val) {
 	const struct sspair in_pair = {_key, _val, NULL};
 
 	return ssminsert(&alias_map, in_pair);
@@ -110,7 +112,7 @@ int msh_source(char** args) {
 	return 1;
 }
 
-char* search_aliases(char* _alias) {
+const char* search_aliases(const char* _alias) {
 	struct sspair* alias_pair = get_ssp(&alias_map, _alias);
 
 	if(alias_pair && strcmp(alias_pair->val, "alias") != 0) {

@@ -45,35 +45,13 @@ int msh_unalias(char **);
 int msh_source(char **);
 
 int search_built_ins(char **);
-char* search_aliases(char *);
+const char* search_aliases(const char *);
 
-static char* built_ins[] = {
-	"cd",
-	"ls",
-	"cat",
-	"touch",
-	"rm",
+extern unsigned int nbuiltins;
+extern char* built_ins[];
+extern int (*built_in_funcs[]) (char **);
 
-	"set", //a.k.a. 'export'
-	"unset",
-	"alias",
-	"unalias",
-	"source" // sometimes can also just say '.'
-};
-static int (*built_in_funcs[]) (char **) = {
-	&msh_cd,
-	&msh_ls,
-	&msh_cat,
-	&msh_touch,
-	&msh_rm,
-
-	&msh_set,
-	&msh_unset,
-	&msh_alias,
-	&msh_unalias,
-	&msh_source
-};
-static int get_argc(void** argv) {
+static inline int get_argc(void** argv) {
 	void** arg = argv;
 	int out = 0;
 

@@ -130,21 +130,21 @@ char** parse_line(char* line) {
 
 	// check if in alias list, if not, break
 	// else, return cstring array and tokenize then put into out
-	char* alias_match = search_aliases(token);
+	const char* alias_match = search_aliases(token);
 	if(alias_match) {
-		alias_match = strdup(alias_match);
+		char *alias = strdup(alias_match);
 		short tok_len = strlen(line);
 
 		memset(line, 0, tok_len);
 		line[tok_len] = delims[0];
 
-		alias_match = realloc(alias_match, strlen(alias_match) + strlen(line + tok_len) + 1);
-		if(!alias_match) {
+		alias = realloc(alias, strlen(alias) + strlen(line + tok_len) + 1);
+		if(!alias) {
 			MSHERR("realloc error")
 			exit(1);
 		}
 
-		line = strcat(alias_match, line + tok_len);
+		line = strcat(alias, line + tok_len);
 		token = strtok(line, delims);
 	}
 

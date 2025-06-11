@@ -1,7 +1,7 @@
 #include "hash.h"
 
 sspair* get_ssp(ssmap* mp, const char* _key) {
-    unsigned int idx = oat_hashf(_key, strlen(_key)) % mp->cap;
+    unsigned int idx = oat_hashf(_key, strlen((char *)_key)) % mp->cap;
 
     struct sspair* temp = mp->data[idx];
     if(!temp)
@@ -17,12 +17,16 @@ sspair* get_ssp(ssmap* mp, const char* _key) {
 
     return NULL;
 }
-char* get_ssval(ssmap* mp, const char* _key) {
+const char* get_ssval(ssmap* mp, const char* _key) {
     return get_ssp(mp, _key)->val;
 }
 
 bool ssminsert(ssmap* mp, sspair ssp) {
     struct sspair* in_pair = (sspair *)malloc(sizeof(sspair));
+    in_pair->key = strdup(ssp.key); // replace w/ strdup
+    in_pair->val = strdup(ssp.val); // replace w/ strdup
+
+	/*
     in_pair->key = (char *)malloc(strlen(ssp.key) + 1); // replace w/ strdup
     in_pair->val = (char *)malloc(strlen(ssp.val) + 1); // replace w/ strdup
     in_pair->next = NULL;
@@ -34,6 +38,7 @@ bool ssminsert(ssmap* mp, sspair ssp) {
 
     strcpy(in_pair->key, ssp.key);
     strcpy(in_pair->val, ssp.val);
+	*/
 
     if(!ssminsertp(mp, in_pair)) {
         free(in_pair);
@@ -42,7 +47,7 @@ bool ssminsert(ssmap* mp, sspair ssp) {
 
     return true;
 }
-bool ssminsertss(ssmap* mp, char* _key, char* _val) {
+bool ssminsertss(ssmap* mp, const char* _key, const char* _val) {
     if(!_key)
         return false;
 
@@ -102,7 +107,7 @@ bool ssminsertp(ssmap* mp, sspair* ssp) {
     return true;
 }
 
-bool ssmremove(ssmap* mp, char* _key) {
+bool ssmremove(ssmap* mp, const char* _key) {
     if(!_key)
         return false;
 
@@ -134,7 +139,7 @@ bool ssmremove(ssmap* mp, char* _key) {
     return false;
 }
 
-bool ssrehash(ssmap* mp, const unsigned int old_len, unsigned int (*hash_func) (void *, int)) {
+bool ssrehash(ssmap* mp, const unsigned int old_len, unsigned int (*hash_func) (const void *, int)) {
     if(!hash_func) {
         hash_func = oat_hashf;
     }
@@ -177,16 +182,7 @@ bool ssrehash(ssmap* mp, const unsigned int old_len, unsigned int (*hash_func) (
     return true;
 }
 
-inline ssmap* make_ssmap(unsigned int _cap) {
-    struct ssmap* out = (ssmap *)malloc(sizeof(ssmap));
-
-    out->data = (sspair **)calloc(sizeof(sspair *), _cap);
-    out->size = 0;
-    out->cap = _cap;
-
-    return out;
-}
-inline void print_ssmp(ssmap* mp) {
+void print_ssmp(ssmap* mp) {
     for(int i = 0; i < mp->cap; i++) {
 		if(mp->data[i]) {
 			struct sspair* bucket = mp->data[i];
