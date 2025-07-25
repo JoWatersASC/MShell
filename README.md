@@ -35,6 +35,7 @@ Follow these steps to run MShell locally:
 # 1. Clone the repository
 git clone https://github.com/your-username/MShell.git
 cd MShell
+mkdir -p build/bin build/lib build/obj
 
 # 2. Ensure dependencies are installed
 #    - GCC (>= 9.0)
@@ -43,9 +44,6 @@ cd MShell
 
 # 3. Build the project
 make
-
-# (Alternatively, run the provided setup script)
-bash setup.sh
 
 # 4. Run the shell
 ./build/bin/MShell
