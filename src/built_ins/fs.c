@@ -200,10 +200,9 @@ int msh_rm(char** args) {
 }
 
 extern char *builtins[];
+extern unsigned int nbuiltins;
 int search_built_ins(char** args) {
-    BYTE num_built_ins = sizeof(nbuiltins) / sizeof(char *); // number of built in functions
-
-    for(int i = 0; i < num_built_ins; i++) {
+    for(int i = 0; i < nbuiltins; i++) {
         if(strcmp(args[0], built_ins[i]) == 0) {
             return (*built_in_funcs[i])(args);
         }
