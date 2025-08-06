@@ -9,7 +9,7 @@ export CC
 export CFLAGS
 export LDFLAGS
 
-INCLUDE_DIR = $(ROOT_DIR)/include
+INCLUDE_DIR = $(ROOT_DIR)/src
 LIB_DIR = $(ROOT_DIR)/build/lib
 BIN_DIR = $(ROOT_DIR)/build/bin
 OBJ_DIR = $(ROOT_DIR)/build/obj
